@@ -12,7 +12,7 @@ information using the undocumented Metlink Wellington API.
 `pip install hass-metlink-api` or use with Home Assistant Metlink Wellington Integration.
 
 ## Usage
-After importing the MetlinkDataManager class into your code, there are four functions that can be called
+After importing the MetlinkDataManager class into your code, there are five functions that can be called
 by supplying the required parameters. 
 
 See below for examples of how these functions can be used.  
