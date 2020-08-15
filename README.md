@@ -9,7 +9,7 @@ This library provides convenient async access to Metlink Wellington transport ne
 information using the undocumented Metlink Wellington API.
 
 ## Installation
-`pip install hass-metlink-api` or use with Home Assistant Metlink Wellingon Integration.
+`pip install hass-metlink-api` or use with Home Assistant Metlink Wellington Integration.
 
 ## Usage
 After instantiating the MetlinkDataManager class, there are four functions that can be called
