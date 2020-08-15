@@ -130,7 +130,7 @@ Returns one variable: a. List of the numbered positons for the services for the 
 
 Function identifies the postion of services in the data for a desired route. It then returns the positon of the services for the route. If the route does not exist at the stop then it returns an error in place of the position of the services for the route. 
 
-The services data for the route can be extracted from the flattened data using a call if their position in the data dictonary is known.  
+You can extract the services data for the route from the flattened data dictonary if their position in the data dictonary is known.  
 
 | Parameter          | Description                               |
 |--------------------|-------------------------------------------|
