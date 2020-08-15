@@ -117,9 +117,9 @@ Three variables are returned: 1. State code  2. Flattened data or none  3. Posit
 
 It assesses the nature of the status code, and if the status is not ok, then logs an error message and sets a state for a Home Assistant entity. No data or position of services is returned in this case. 
 
-If the status is ok, it then uses the flatten_data function to flatten the nested data (each service is identified by adding a number to each key), and identify the postion of services in the data for a desired route using the services_filter function. It then returns the flattened data and the positon of the services for the route. If the route does not exist at the stop then it returns an error in place of the position of the services for the route. 
+If the status is ok, it then uses the flatten_data function to flatten the nested data (each service is identified by adding a number to each key), and identify the postion of services in the data for a desired route using the services_filter function. It then returns the flattened data and the positon of the services for the route.
 
-If the desired route (route_id) is not found in the services in the flattened data, it logs an error message and sets a state for a Home Assistant entity. No data is returned in this case.  
+If the desired route (route_id) is not found in the services in the flattened data (the services_filter function returns an error), it logs an error message and sets a state for a Home Assistant entity. No data is returned in this case.  
 
 An example of the flattened data is:
 
