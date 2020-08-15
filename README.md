@@ -12,12 +12,24 @@ information using the undocumented Metlink Wellington API.
 `pip install hass-metlink-api` or use with Home Assistant Metlink Wellington Integration.
 
 ## Usage
-After instantiating the MetlinkDataManager class, there are four functions that can be called
+After importing the MetlinkDataManager class into your code, there are four functions that can be called
 by supplying the required parameters. 
 
 See below for examples of how these functions can be used.  
 
-1. MetlinkDataManager.async_met_get
+1. MetlinkDataManager.format_timestamp 
+
+This function converts a Metlink date and time (datetime) string from the API to a formated local time and day as used on Metlink digital signs.
+
+**Parameters**
+
+| Parameter          | Description                               |
+|--------------------|-------------------------------------------|
+| `stime` | The datetime string |
+
+Returns one variable: time and day e.g. 04:45PM Tues
+
+2. MetlinkDataManager.async_met_get
 
 This function attempts to retrieve stop and departure information for the selected stop_id from the Metlink API.
 
@@ -87,19 +99,9 @@ Status Codes
 | `"no_err": "ok"` | Data was sucessfully retrieved from the server  |
 | `"not_known": "error"` | Something went wrong during the request  |
 
-2. MetlinkDataManager.async_met_assess
+3. MetlinkDataManager.async_met_assess
 
-This function is designed to be used with Home Assistant.
-
-Three variables are returned: 1. State code  2. Flattened data or none  3. Position of services or none 
-
-It assesses the nature of the status code, and if the status is not ok, then logs an error message and sets a state for a Home Assistant entity.
-
-If the status is ok, it then uses the flatten_data function to flatten the nested data (each service is identified by adding a number to each key), and identify the postion of services in the data for a desired route using the services_filter function. It then returns the flattened data and the positon of the services for the route. If the route does not exist at the stop then it returns an error in place of the position of the services for the route. 
-
-An example of the flattened data is:
-
-OrderedDict([('LastModified', '2020-07-12T14:16:54+12:00'), ('Stop_Name', 'Crofton Downs Station'), ('Stop_Sms', 'CROF'), ('Stop_Farezone', '3'), ('Stop_Lat', -41.2550408), ('Stop_Long', 174.7664988), ('Stop_LastModified', '2020-07-12T00:02:14+12:00'), ('Notices_0_RecordedAtTime', '2020-07-12T14:16:54+12:00'), ('Notices_0_MonitoringRef', 'CROF'), ('Notices_0_LineRef', ''), ('Notices_0_DirectionRef', ''), ('Notices_0_LineNote', 'JVL: Regular fares and ticketing now applies, have your tickets ready for inspection. See Metlink.org.nz for more info.'), ('Notices_1_RecordedAtTime', '2020-07-12T14:16:54+12:00'), ('Notices_1_MonitoringRef', 'CROF'), ('Notices_1_LineRef', ''), ('Notices_1_DirectionRef', ''), ('Notices_1_LineNote', 'JVL: Additional carriages and extra services operating today for Super Rugby. See metlink.org.nz for more info'), ('Services_0_ServiceID', 'JVL'), ('Services_0_IsRealtime', True), ('Services_0_VehicleRef', '4155'), ('Services_0_Direction', 'Inbound'), ('Services_0_OperatorRef', 'RAIL'), ('Services_0_OriginStopID', 'JOHN'), ('Services_0_OriginStopName', 'JohnsonvilleStn'), ('Services_0_DestinationStopID', 'WELL'), ('Services_0_DestinationStopName', 'WELL-All stops'), ('Services_0_AimedArrival', '2020-07-12T14:14:00+12:00'), ('Services_0_AimedDeparture', '2020-07-12T14:14:00+12:00'), ('Services_0_VehicleFeature', None), ('Services_0_DepartureStatus', 'delayed'), ('Services_0_ExpectedDeparture', '2020-07-12T14:18:42+12:00'), ('Services_0_DisplayDeparture', '2020-07-12T14:18:42+12:00'), ('Services_0_DisplayDepartureSeconds', 108), ('Services_0_Service_Code', 'JVL'), ('Services_0_Service_TrimmedCode', 'JVL'), ('Services_0_Service_Name', 'Johnsonville Line (Johnsonville - Wellington)'), ('Services_0_Service_Mode', 'Train'), ('Services_0_Service_Link', '/timetables/train/JVL'), ('Services_1_ServiceID', 'JVL'), ('Services_1_IsRealtime', False), ('Services_1_VehicleRef', None), ('Services_1_Direction', 'Outbound'), ('Services_1_OperatorRef', 'RAIL'), ('Services_1_OriginStopID', 'WELL'), ('Services_1_OriginStopName', 'WgtnStn'), ('Services_1_DestinationStopID', 'JOHN'), ('Services_1_DestinationStopName', 'JOHN-All stops'), ('Services_1_AimedArrival', '2020-07-12T14:40:00+12:00'), ('Services_1_AimedDeparture', '2020-07-12T14:40:00+12:00'), ('Services_1_VehicleFeature', None), ('Services_1_DepartureStatus', None), ('Services_1_ExpectedDeparture', None), ('Services_1_DisplayDeparture', '2020-07-12T14:40:00+12:00'), ('Services_1_DisplayDepartureSeconds', 1386), ('Services_1_Service_Code', 'JVL'), ('Services_1_Service_TrimmedCode', 'JVL'), ('Services_1_Service_Name', 'Johnsonville Line (Johnsonville - Wellington)'), ('Services_1_Service_Mode', 'Train'), ('Services_1_Service_Link', '/timetables/train/JVL')
+This function is designed to be used with Home Assistant. It checks the status code and data (if any) returned from the Metlink API request, and also flattens the data and identifies the services in the data for a given route.  
 
 **Parameters**
 
@@ -111,9 +113,17 @@ OrderedDict([('LastModified', '2020-07-12T14:16:54+12:00'), ('Stop_Name', 'Croft
 | `route_id` | The route id for the desired service at the stop location |
 | `ser_n` | The number of services for the route at the stop that you wish to retrieve from the data |
 
-3. MetlinkDataManager.flatten_data
+Three variables are returned: 1. State code  2. Flattened data or none  3. Position of services or none 
 
-Returns one variable: The flattened data dictonary.
+It assesses the nature of the status code, and if the status is not ok, then logs an error message and sets a state for a Home Assistant entity.
+
+If the status is ok, it then uses the flatten_data function to flatten the nested data (each service is identified by adding a number to each key), and identify the postion of services in the data for a desired route using the services_filter function. It then returns the flattened data and the positon of the services for the route. If the route does not exist at the stop then it returns an error in place of the position of the services for the route. 
+
+An example of the flattened data is:
+
+OrderedDict([('LastModified', '2020-07-12T14:16:54+12:00'), ('Stop_Name', 'Crofton Downs Station'), ('Stop_Sms', 'CROF'), ('Stop_Farezone', '3'), ('Stop_Lat', -41.2550408), ('Stop_Long', 174.7664988), ('Stop_LastModified', '2020-07-12T00:02:14+12:00'), ('Notices_0_RecordedAtTime', '2020-07-12T14:16:54+12:00'), ('Notices_0_MonitoringRef', 'CROF'), ('Notices_0_LineRef', ''), ('Notices_0_DirectionRef', ''), ('Notices_0_LineNote', 'JVL: Regular fares and ticketing now applies, have your tickets ready for inspection. See Metlink.org.nz for more info.'), ('Notices_1_RecordedAtTime', '2020-07-12T14:16:54+12:00'), ('Notices_1_MonitoringRef', 'CROF'), ('Notices_1_LineRef', ''), ('Notices_1_DirectionRef', ''), ('Notices_1_LineNote', 'JVL: Additional carriages and extra services operating today for Super Rugby. See metlink.org.nz for more info'), ('Services_0_ServiceID', 'JVL'), ('Services_0_IsRealtime', True), ('Services_0_VehicleRef', '4155'), ('Services_0_Direction', 'Inbound'), ('Services_0_OperatorRef', 'RAIL'), ('Services_0_OriginStopID', 'JOHN'), ('Services_0_OriginStopName', 'JohnsonvilleStn'), ('Services_0_DestinationStopID', 'WELL'), ('Services_0_DestinationStopName', 'WELL-All stops'), ('Services_0_AimedArrival', '2020-07-12T14:14:00+12:00'), ('Services_0_AimedDeparture', '2020-07-12T14:14:00+12:00'), ('Services_0_VehicleFeature', None), ('Services_0_DepartureStatus', 'delayed'), ('Services_0_ExpectedDeparture', '2020-07-12T14:18:42+12:00'), ('Services_0_DisplayDeparture', '2020-07-12T14:18:42+12:00'), ('Services_0_DisplayDepartureSeconds', 108), ('Services_0_Service_Code', 'JVL'), ('Services_0_Service_TrimmedCode', 'JVL'), ('Services_0_Service_Name', 'Johnsonville Line (Johnsonville - Wellington)'), ('Services_0_Service_Mode', 'Train'), ('Services_0_Service_Link', '/timetables/train/JVL'), ('Services_1_ServiceID', 'JVL'), ('Services_1_IsRealtime', False), ('Services_1_VehicleRef', None), ('Services_1_Direction', 'Outbound'), ('Services_1_OperatorRef', 'RAIL'), ('Services_1_OriginStopID', 'WELL'), ('Services_1_OriginStopName', 'WgtnStn'), ('Services_1_DestinationStopID', 'JOHN'), ('Services_1_DestinationStopName', 'JOHN-All stops'), ('Services_1_AimedArrival', '2020-07-12T14:40:00+12:00'), ('Services_1_AimedDeparture', '2020-07-12T14:40:00+12:00'), ('Services_1_VehicleFeature', None), ('Services_1_DepartureStatus', None), ('Services_1_ExpectedDeparture', None), ('Services_1_DisplayDeparture', '2020-07-12T14:40:00+12:00'), ('Services_1_DisplayDepartureSeconds', 1386), ('Services_1_Service_Code', 'JVL'), ('Services_1_Service_TrimmedCode', 'JVL'), ('Services_1_Service_Name', 'Johnsonville Line (Johnsonville - Wellington)'), ('Services_1_Service_Mode', 'Train'), ('Services_1_Service_Link', '/timetables/train/JVL')
+
+4. MetlinkDataManager.flatten_data
 
 This function flattens the nested data dictonary into a flat data dictonary. The tuples for each previously nested service are now seperately identified by adding a number to each key (see above for example of flattened data).  
 
@@ -124,17 +134,21 @@ This function flattens the nested data dictonary into a flat data dictonary. The
 | `jdata` | API data dictionary returned by async_met_get function  |
 | `sep` | Seperator used to seperate number from key name. Preset to an underscore |
 
-4. MetlinkDataManager.services_filter
+Returns one variable: The flattened data dictonary.
 
-Returns one variable: a. List of the numbered positons for the services for the route or 2. an error value  
+5. MetlinkDataManager.services_filter
 
-Function identifies the postion of services in the data for a desired route. It then returns the positon of the services for the route. If the route does not exist at the stop then it returns an error in place of the position of the services for the route. 
-
-You can extract the services data for the route from the flattened data dictonary if their position in the data dictonary is known.  
+This function identifies the postion of services in the services data for a desired route. It then returns the positon of the services for the route. If the route does not exist at the stop then it returns an error in place of the position of the services for the route. 
 
 | Parameter          | Description                               |
 |--------------------|-------------------------------------------|
 | `flat_data` | Flattened data dictionary returned by flatten_data function  |
 | `route` | The route at the stop for which services will be identified in the data |
 | `ser_num` | The number of service records for the route to identify |
+
+Returns one variable: a. List of the numbered positons for the services for the route or b. an error value  
+
+You can extract the services data for the route from the flattened data dictonary if their position in the data dictonary is known.  
+
+
 
